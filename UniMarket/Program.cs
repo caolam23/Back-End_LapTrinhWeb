@@ -173,6 +173,14 @@ app.UseStaticFiles(new StaticFileOptions
     RequestPath = "/images/categories"
 });
 
+// Cấu hình phục vụ ảnh từ thư mục "wwwroot/images/Posts"
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/Posts")),
+    RequestPath = "/images/Posts" // Đây là đường dẫn bạn sẽ sử dụng trong frontend
+});
+
 app.MapRazorPages();
 app.MapControllers();
 

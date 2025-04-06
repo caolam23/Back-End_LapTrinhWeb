@@ -396,6 +396,24 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\images\Posts\487881930_17859405633391397_4300655640340420952_n.jpg'))</OriginalItemSpec>
     </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\images\Posts\488638261_17900839446119041_8916218178898972703_n.jpg'))">
+      <SourceType>Package</SourceType>
+      <SourceId>UniMarket</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/UniMarket</BasePath>
+      <RelativePath>images/Posts/488638261_17900839446119041_8916218178898972703_n.jpg</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <Fingerprint>ifd7d1pt64</Fingerprint>
+      <Integrity>vuBIo/xZVz5bQzOs8m6KMET1vaknAzI4wIFgJQIA7Po=</Integrity>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\images\Posts\488638261_17900839446119041_8916218178898972703_n.jpg'))</OriginalItemSpec>
+    </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\images\Posts\552f37d4421f527ff5db771588ac6c46.jpg'))">
       <SourceType>Package</SourceType>
       <SourceId>UniMarket</SourceId>
@@ -449,6 +467,24 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\images\Posts\6fa272e9b64ba1569fc498d7fb5dd573.jpg'))</OriginalItemSpec>
+    </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\images\Posts\78ed1f1dc8bc3999d934f32a7eea470b.jpg'))">
+      <SourceType>Package</SourceType>
+      <SourceId>UniMarket</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/UniMarket</BasePath>
+      <RelativePath>images/Posts/78ed1f1dc8bc3999d934f32a7eea470b.jpg</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <Fingerprint>ixh5aa3e8h</Fingerprint>
+      <Integrity>BkxfSDxK2ZN1yZeP4/ueYJ8wf2sAo2hQLyt6RTUaWk4=</Integrity>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\images\Posts\78ed1f1dc8bc3999d934f32a7eea470b.jpg'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\images\Posts\anh1.jpg'))">
       <SourceType>Package</SourceType>

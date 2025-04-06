@@ -514,64 +514,89 @@ namespace UniMarket.Controllers
                 return StatusCode(500, new { message = "Lỗi server khi xóa danh mục!", error = ex.Message });
             }
         }
+
+        [HttpPost("reject-post/{id}")]
+        public async Task<IActionResult> RejectPost(int id)
+        {
+            var post = await _context.TinDangs.FindAsync(id);
+
+            if (post == null)
+            {
+                return NotFound("Tin đăng không tồn tại!");
+            }
+
+            if (post.TrangThai == TrangThaiTinDang.TuChoi)
+            {
+                return BadRequest("Tin đăng này đã bị từ chối rồi.");
+            }
+
+            post.TrangThai = TrangThaiTinDang.TuChoi;
+
+            _context.TinDangs.Update(post);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Tin đăng đã bị từ chối!" });
+        }
+
+        [HttpPost("approve-post/{id}")]
+        public async Task<IActionResult> ApprovePost(int id, [FromForm] IFormFile? image)
+        {
+            var post = await _context.TinDangs.FindAsync(id);
+
+            if (post == null)
+            {
+                return NotFound("Tin đăng không tồn tại!");
+            }
+
+            // Kiểm tra xem bài đăng đã được duyệt chưa
+            if (post.TrangThai == TrangThaiTinDang.DaDuyet)
+            {
+                return BadRequest("Tin đăng này đã được duyệt rồi.");
+            }
+
+            // Cập nhật trạng thái tin đăng thành "Đã Duyệt"
+            post.TrangThai = TrangThaiTinDang.DaDuyet;
+
+            if (image != null)
+            {
+                var uploadPath = Path.Combine("wwwroot", "images", "TinDang");
+
+                // Tạo thư mục nếu chưa tồn tại
+                if (!Directory.Exists(uploadPath))
+                {
+                    Directory.CreateDirectory(uploadPath);
+                }
+
+                var filePath = Path.Combine(uploadPath, image.FileName);
+
+                // Lưu ảnh vào thư mục
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await image.CopyToAsync(stream);
+                }
+
+                // Tạo đối tượng AnhTinDang mới và thêm vào danh sách AnhTinDangs
+                var anhTinDang = new AnhTinDang
+                {
+                    DuongDan = $"/images/TinDang/{image.FileName}", // Đường dẫn ảnh
+                    MaTinDang = post.MaTinDang  // Gán mã tin đăng
+                };
+
+                // Thêm vào danh sách AnhTinDangs của bài đăng
+                post.AnhTinDangs.Add(anhTinDang);
+            }
+
+            // Cập nhật bài đăng trong cơ sở dữ liệu
+            _context.TinDangs.Update(post);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Tin đăng đã được duyệt và ảnh đã được lưu!" });
+        }
         public class UpdateCategoryModel
         {
             public string TenDanhMuc { get; set; }
             public int DanhMucChaId { get; set; }
         }
-        // duyệt tin đăng 
-        [HttpPost]
-        public async Task<IActionResult> DuyetTinDang(int maTinDang)
-        {
-            var tinDang = await _context.TinDangs.FindAsync(maTinDang);
-            if (tinDang == null)
-            {
-                return NotFound("Tin đăng không tồn tại.");
-            }
-
-            // Thay đổi trạng thái thành "Đã Duyệt"
-            tinDang.TrangThai = TrangThaiTinDang.DaDuyet;
-
-            // Lưu thay đổi vào cơ sở dữ liệu
-            await _context.SaveChangesAsync();
-
-            return RedirectToAction("DanhSachTinDang", "Admin"); // Quay lại danh sách tin đăng
-        }
-        // từ chối tin đăng 
-        [HttpPost]
-        public async Task<IActionResult> TuChoiTinDang(int maTinDang)
-        {
-            var tinDang = await _context.TinDangs.FindAsync(maTinDang);
-            if (tinDang == null)
-            {
-                return NotFound("Tin đăng không tồn tại.");
-            }
-
-            // Thay đổi trạng thái thành "Từ Chối"
-            tinDang.TrangThai = TrangThaiTinDang.TuChoi;
-
-            // Lưu thay đổi vào cơ sở dữ liệu
-            await _context.SaveChangesAsync();
-
-            return RedirectToAction("DanhSachTinDang", "Admin"); // Quay lại danh sách tin đăng
-        }
-        // xóa tin đăng 
-        [HttpPost]
-        public async Task<IActionResult> XoaTinDang(int maTinDang)
-        {
-            var tinDang = await _context.TinDangs.FindAsync(maTinDang);
-            if (tinDang == null)
-            {
-                return NotFound("Tin đăng không tồn tại.");
-            }
-
-            // Xóa tin đăng khỏi cơ sở dữ liệu
-            _context.TinDangs.Remove(tinDang);
-            await _context.SaveChangesAsync();
-
-            return RedirectToAction("DanhSachTinDang", "Admin"); // Quay lại danh sách tin đăng
-        }
-
 
         // Model thay đổi vai trò
         public class ChangeRoleModel

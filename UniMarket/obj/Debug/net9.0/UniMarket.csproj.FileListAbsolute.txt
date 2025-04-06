@@ -401,3 +401,4 @@ C:\Users\caol6\source\repos\UniMarket\UniMarket\obj\Debug\net9.0\compressed\0592
 C:\Users\caol6\source\repos\UniMarket\UniMarket\obj\Debug\net9.0\compressed\bfh0yjdqms-eev6ylr7eq.gz
 C:\Users\caol6\source\repos\UniMarket\UniMarket\obj\Debug\net9.0\compressed\mlyexy8w0c-3nqp2xdfe5.gz
 C:\Users\caol6\source\repos\UniMarket\UniMarket\obj\Debug\net9.0\compressed\1p9pw6nfdb-eev6ylr7eq.gz
+C:\Users\caol6\source\repos\UniMarket\UniMarket\obj\Debug\net9.0\UniMarket.sourcelink.json

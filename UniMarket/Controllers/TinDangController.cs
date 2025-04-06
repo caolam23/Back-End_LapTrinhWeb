@@ -24,23 +24,36 @@ namespace UniMarket.Controllers
             _userManager = userManager;
         }
 
-        // GET: api/tindang/get-posts
         [HttpGet("get-posts")]
         public IActionResult GetPosts()
         {
             var posts = _context.TinDangs
+                .Where(p => p.TrangThai == TrangThaiTinDang.DaDuyet) // Chỉ lấy tin đã duyệt
                 .Include(p => p.NguoiBan)
-                .Include(p => p.TinhThanh) // Bao gồm thông tin tỉnh thành
-                .Include(p => p.QuanHuyen) // Bao gồm thông tin quận huyện
+                .Include(p => p.TinhThanh)
+                .Include(p => p.QuanHuyen)
+                .Include(p => p.AnhTinDangs)
                 .Select(p => new
                 {
                     p.MaTinDang,
                     p.TieuDe,
-                    p.TrangThai,
-                    NguoiBan = p.NguoiBan.FullName,
+                    p.MoTa,
+                    p.Gia,
+                    p.CoTheThoaThuan,
+                    p.TinhTrang,
+                    p.DiaChi,
+                    p.MaTinhThanh,
+                    p.MaQuanHuyen,
+                    p.MaNguoiBan,
                     p.NgayDang,
-                    TinhThanh = p.TinhThanh.TenTinhThanh, // Lấy tên tỉnh thành
-                    QuanHuyen = p.QuanHuyen.TenQuanHuyen // Lấy tên quận huyện
+                    Images = p.AnhTinDangs.Select(a =>
+                        a.DuongDan.StartsWith("/images/Posts/")
+                            ? a.DuongDan
+                            : $"/images/Posts/{a.DuongDan}"
+                    ).ToList(),
+                    NguoiBan = p.NguoiBan.FullName,
+                    TinhThanh = p.TinhThanh.TenTinhThanh,
+                    QuanHuyen = p.QuanHuyen.TenQuanHuyen
                 })
                 .ToList();
 
@@ -51,6 +64,8 @@ namespace UniMarket.Controllers
 
             return Ok(posts);
         }
+
+
         [HttpPost("add-post")]
         public async Task<IActionResult> AddPost(
     [FromForm] string title,
@@ -132,8 +147,38 @@ namespace UniMarket.Controllers
             _context.TinDangs.Add(post);
             await _context.SaveChangesAsync();
 
-            // Trả về MaTinDang của bài đăng vừa tạo
-            return Ok(new { MaTinDang = post.MaTinDang });
+            return Ok(new { message = "Bài đăng đã được thêm thành công!" });
+        }
+
+        [HttpGet("get-posts-admin")]
+        public IActionResult getpotsadmin()
+        {
+            var posts = _context.TinDangs
+                .Include(p => p.NguoiBan)
+                .Include(p => p.TinhThanh) // Bao gồm thông tin tỉnh thành
+                .Include(p => p.QuanHuyen) // Bao gồm thông tin quận huyện
+                .Include(p => p.AnhTinDangs) // Bao gồm thông tin hình ảnh (nếu có bảng AnhTinDang)
+                .Select(p => new
+                {
+                    p.MaTinDang,
+                    p.TieuDe,
+                    p.TrangThai,
+                    NguoiBan = p.NguoiBan.FullName,
+                    p.Gia,  // Thêm giá
+                    p.MoTa, // Thêm mô tả
+                    HinhAnh = p.AnhTinDangs.Select(a => a.DuongDan), // Lấy đường dẫn hình ảnh từ bảng AnhTinDang
+                    p.NgayDang,
+                    TinhThanh = p.TinhThanh.TenTinhThanh, // Lấy tên tỉnh thành
+                    QuanHuyen = p.QuanHuyen.TenQuanHuyen // Lấy tên quận huyện
+                })
+                .ToList();
+
+            if (posts == null || !posts.Any())
+            {
+                return NotFound("Không có tin đăng nào.");
+            }
+
+            return Ok(posts);
         }
 
 
@@ -196,41 +241,52 @@ namespace UniMarket.Controllers
             return Ok(new { message = "Xóa tin đăng thành công" });
         }
 
-        // Cấu hình lại route API backend để đảm bảo nó nhận yêu cầu từ frontend
-        [HttpGet("get-post/{id}")]
-        public IActionResult GetPost(int id)
+        [HttpGet("xemtruoc/{id}")]
+        public async Task<ActionResult<TinDang>> XemTruocTinDang(int id)
         {
-            var post = _context.TinDangs
-                .Include(p => p.NguoiBan)
-                .Include(p => p.TinhThanh)
-                .Include(p => p.QuanHuyen)
-                .Where(p => p.MaTinDang == id) // Lọc theo MaTinDang
-                .Select(p => new
-                {
-                    p.MaTinDang,
-                    p.MaDanhMuc,
-                    p.TieuDe,
-                    p.MoTa,
-                    p.Gia,
-                    p.TinhTrang,
-                    p.DiaChi,
-                    TinhThanh = p.TinhThanh.TenTinhThanh,
-                    QuanHuyen = p.QuanHuyen.TenQuanHuyen,
-                    p.NgayDang,
-                    p.CoTheThoaThuan,
-                    p.MaNguoiBan
-                })
-                .FirstOrDefault();
+            var tinDang = await _context.TinDangs
+                .Include(td => td.DanhMuc)
+                .Include(td => td.NguoiBan)
+                .FirstOrDefaultAsync(td => td.MaTinDang == id);
 
-            if (post == null)
+            if (tinDang == null)
             {
-                return NotFound("Không tìm thấy tin đăng.");
+                return NotFound(new { message = "Không tìm thấy tin đăng" });
             }
 
-            return Ok(post);
+            // Trả về tin đăng dưới dạng xem trước (trạng thái chưa duyệt)
+            tinDang.TrangThai = TrangThaiTinDang.ChoDuyet;
+            return Ok(tinDang);
         }
 
 
+        [HttpGet("user/{userId}")]
+        public IActionResult GetPostsByUser(string userId)
+        {
+            var posts = _context.TinDangs
+                .Where(p => p.MaNguoiBan == userId)
+                .Include(p => p.AnhTinDangs)
+                .Include(p => p.NguoiBan) // ✅ Thêm dòng này để lấy tên người bán
+                .Select(p => new
+                {
+                    p.MaTinDang,
+                    p.TieuDe,
+                    p.MoTa,
+                    p.Gia,
+                    p.TrangThai,
+                    p.NgayDang,
+                    NguoiBan = p.NguoiBan.FullName, // ✅ Trả về tên người bán
+                    Images = p.AnhTinDangs.Select(a =>
+                        a.DuongDan.StartsWith("/images/Posts/")
+                            ? a.DuongDan
+                            : $"/images/Posts/{a.DuongDan}"
+                    ).ToList()
+                })
+                .ToList();
+
+            return Ok(posts);
+        }
+         
 
 
 
